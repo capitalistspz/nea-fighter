@@ -2,7 +2,7 @@ using common.events;
 using common.physics;
 using LiteNetLib.Utils;
 
-namespace common.networking
+namespace common.networking.C2S
 {
     // Sent when keys/buttons are pressed in gameplay
     public class InputMessage : INetSerializable

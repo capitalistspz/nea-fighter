@@ -1,6 +1,6 @@
 using LiteNetLib.Utils;
 
-namespace common.networking
+namespace common.networking.C2S
 {
     // Sent on connection
     public class ApprovalMessage : INetSerializable

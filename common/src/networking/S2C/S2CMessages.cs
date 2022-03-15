@@ -1,4 +1,4 @@
-namespace common.networking
+namespace common.networking.S2C
 {
     public enum S2CMessageType
     {
