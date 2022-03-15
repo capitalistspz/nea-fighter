@@ -7,6 +7,10 @@ namespace common.networking.S2C
     {
         private Guid _id;
 
+        public EntityRemovedMessage()
+        {
+            _id = Guid.Empty;
+        }
         public EntityRemovedMessage(Guid removedEntityId)
         {
             _id = removedEntityId;

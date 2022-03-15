@@ -9,6 +9,10 @@ namespace common.networking.C2S
     {
         private InputEventArgs _args;
 
+        public InputMessage()
+        {
+            _args = new InputEventArgs();
+        }
         public InputMessage(InputEventArgs eventArgs)
         {
             _args = eventArgs;

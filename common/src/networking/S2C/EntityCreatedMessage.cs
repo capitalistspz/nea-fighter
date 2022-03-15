@@ -10,6 +10,13 @@ namespace common.networking.S2C
         private Guid _id;
         private EntityType _entityType;
         private Vector2 _entityPosition;
+
+        public EntityCreatedMessage()
+        {
+            _entityType = EntityType.Unknown;
+            _id = Guid.Empty;
+            _entityPosition = Vector2.Zero;
+        }
         public EntityCreatedMessage(BaseEntity entity)
         {
             switch (entity)
