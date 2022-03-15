@@ -48,9 +48,9 @@ namespace common.entities
         {
             if (_ticksSinceLerpStart >= 0 && _ticksSinceLerpStart < _maxLerpTicks)
             {
-                MathHelper.Lerp(_oldPosition.X, serverSidePosition.X, (float)_ticksSinceLerpStart / _maxLerpTicks);
-                MathHelper.Lerp(_oldPosition.Y, serverSidePosition.Y, (float)_ticksSinceLerpStart / _maxLerpTicks);
-
+                var intX = MathHelper.Lerp(_oldPosition.X, serverSidePosition.X, (float)_ticksSinceLerpStart / _maxLerpTicks);
+                var intY =MathHelper.Lerp(_oldPosition.Y, serverSidePosition.Y, (float)_ticksSinceLerpStart / _maxLerpTicks);
+                Position = new Point2(intX, intY);
                 _ticksSinceLerpStart += gameTime.ElapsedGameTime.Ticks;
             }
         }
