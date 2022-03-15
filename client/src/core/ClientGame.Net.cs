@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Concurrent;
 using System.Net;
-using common.networking;
+using common.entities;
 using common.networking.S2C;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -45,15 +44,38 @@ namespace client.core
             switch (type)
             {
                 case S2CMessageType.EntityCreated:
+                    NetCreateEntity(reader.Get<EntityCreatedMessage>());
                     break;
                 case S2CMessageType.EntityMotion:
                     break;
                 case S2CMessageType.EntityRemoved:
+                    NetRemoveEntity(reader.Get<EntityRemovedMessage>());
                     break;
                 case S2CMessageType.TextMessage:
                     break;
                 default:
                     Log.Warning("Received unknown message type: {Type}", type);
+                    break;
+            }
+        }
+
+        private void NetRemoveEntity(EntityRemovedMessage msg)
+        {
+            _world.RemoveEntity(_world.GetEntity(msg.Id));
+        }
+        
+        private void NetCreateEntity(EntityCreatedMessage msg)
+        {
+            switch (msg.Type)
+            {
+                case EntityType.PlayerEntity:
+                    _world.AddEntity(new PlayerEntity(_world, msg.Id, msg.Position));
+                    break;
+                case EntityType.ProjectileEntity:
+                    // Projectile Entity does not exist yet
+                    break;
+                default:
+                    Log.Warning("Received unknown entity type");
                     break;
             }
         }
