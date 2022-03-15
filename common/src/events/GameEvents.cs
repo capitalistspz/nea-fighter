@@ -8,7 +8,7 @@ namespace common.events
     {
         public static EventHandler<InputEventArgs> InputEvent;
 
-        private static ConcurrentQueue<InputEventArgs> _inputEvents;
+        private static ConcurrentQueue<InputEventArgs> _inputEvents = new ();
         
         public static void EnqueueInputEvent(InputEventArgs args)
         {
