@@ -49,5 +49,9 @@ namespace common.networking.S2C
             reader.GetBytes(bytes, 16);
             _id = new Guid(bytes);
         }
+
+        public Guid Id => _id;
+        public Point2 Position => _position;
+        public Vector2 Velocity => _velocity;
     }
 }
