@@ -5,6 +5,7 @@ using client.input;
 using common.core;
 using common.entities;
 using common.helper;
+using LiteNetLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -14,7 +15,7 @@ using MonoGame.Extended.Tiled.Renderers;
 
 namespace client.core
 {
-    public class ClientGame : Game
+    public partial class ClientGame : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -29,7 +30,7 @@ namespace client.core
         
         private List<ClientPlayerEntity> _localPlayers;
         private ushort _localPlayerId;
-        
+
         public ClientGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -61,7 +62,7 @@ namespace client.core
             LoadTextures("textures");
             base.LoadContent();
         }
-
+        
         private void LoadTextures(string textureRoot)
         {
             var playerTexture = Content.Load<Texture2D>(textureRoot + "/entities/player");
