@@ -12,7 +12,7 @@ namespace common.entities
     {
         private long _ticksSinceLerpStart;
         private long _maxLerpTicks;
-        public Point2 serverSidePosition;
+        private Point2 _serverSidePosition;
         private Point2 _oldPosition;
 
         public readonly World CurrentWorld;
@@ -37,7 +37,7 @@ namespace common.entities
         public void AssignServerMotion(Point2 position, Vector2 velocity)
         {
             _ticksSinceLerpStart = 0;
-            serverSidePosition = position;
+            _serverSidePosition = position;
             _oldPosition = Position;
             Velocity = (velocity + Velocity) / 2;
 
@@ -48,8 +48,8 @@ namespace common.entities
         {
             if (_ticksSinceLerpStart >= 0 && _ticksSinceLerpStart < _maxLerpTicks)
             {
-                var intX = MathHelper.Lerp(_oldPosition.X, serverSidePosition.X, (float)_ticksSinceLerpStart / _maxLerpTicks);
-                var intY =MathHelper.Lerp(_oldPosition.Y, serverSidePosition.Y, (float)_ticksSinceLerpStart / _maxLerpTicks);
+                var intX = MathHelper.Lerp(_oldPosition.X, _serverSidePosition.X, (float)_ticksSinceLerpStart / _maxLerpTicks);
+                var intY =MathHelper.Lerp(_oldPosition.Y, _serverSidePosition.Y, (float)_ticksSinceLerpStart / _maxLerpTicks);
                 Position = new Point2(intX, intY);
                 _ticksSinceLerpStart += gameTime.ElapsedGameTime.Ticks;
             }
