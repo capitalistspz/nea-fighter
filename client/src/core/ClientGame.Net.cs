@@ -16,6 +16,7 @@ namespace client.core
         private NetPeer _server;
         private EventBasedNetListener _listener;
         public ConcurrentQueue<INetSerializable> MessageQueue;
+        
         public bool NetConnected { get; private set; }
         protected void InitNetwork()
         {
@@ -90,12 +91,20 @@ namespace client.core
                     break;
             }
         }
-
+        
         private void OnInput(object sender, InputEventArgs args)
         {
             var msg = new InputMessage(args);
             var writer = new NetDataWriter();
             writer.Put(msg);
+            _server?.Send(writer, DeliveryMethod.ReliableOrdered);
+        }
+        
+        // Tells the server when a local player is added or removed
+        private void SendLocalPlayerUpdate(ushort localPlayerId, bool removed)
+        {
+            var writer = new NetDataWriter();
+            
             _server?.Send(writer, DeliveryMethod.ReliableOrdered);
         }
     }

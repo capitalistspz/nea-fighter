@@ -131,6 +131,7 @@ namespace client.core
             _controllerGameInputs.Add(new ControllerGameplayInput(newPlayer, padId));
             _localPlayers.Add(newPlayer);
             _world.AddEntity(newPlayer);
+            SendLocalPlayerUpdate(newPlayer.LocalPlayerID, false);
         }
     }
 }
