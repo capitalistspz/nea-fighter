@@ -51,6 +51,11 @@ namespace common.core
             
         }
 
+        public BaseEntity GetEntity(Guid id)
+        {
+            return _entityManager.GetEntity(id);
+        }
+
         public void RemoveCollisionObject(ICollisionActor actor)
         {
             _collisionComponent.Remove(actor);
