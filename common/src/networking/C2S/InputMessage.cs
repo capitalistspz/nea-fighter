@@ -15,6 +15,7 @@ namespace common.networking.C2S
         }
         public void Serialize(NetDataWriter writer)
         {
+            writer.Put((byte)C2SMessageType.Input);
             writer.Put(_args.LocalPlayerId);
             writer.Put(_args.MovementDirection);
             writer.Put(_args.AimDirection.X);
@@ -24,6 +25,7 @@ namespace common.networking.C2S
 
         public void Deserialize(NetDataReader reader)
         {
+            _ = reader.GetByte();
             _args.LocalPlayerId = reader.GetUShort();
             _args.MovementDirection = reader.Get<Vector2I>();
             _args.AimDirection.X = reader.GetFloat();

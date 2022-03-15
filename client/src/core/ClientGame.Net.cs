@@ -41,7 +41,7 @@ namespace client.core
         }
         private void OnReceiveData(NetPeer peer, NetDataReader reader, DeliveryMethod deliveryMethod)
         {
-            var type = (S2CMessageType) reader.GetByte();
+            var type = (S2CMessageType) reader.PeekByte();
             switch (type)
             {
                 case S2CMessageType.EntityCreated:
