@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.Net;
 using common.entities;
+using common.events;
+using common.networking.C2S;
 using common.networking.S2C;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -22,6 +24,8 @@ namespace client.core
             _listener.NetworkReceiveEvent += OnReceiveData;
             NetConnected = false;
             MessageQueue = new ConcurrentQueue<INetSerializable>();
+
+            GameEvents.InputEvent += OnInput;
         }
         // Connect to a server
         public void Connect(IPAddress ipv4Address, int port, string serverPassword)
@@ -85,6 +89,14 @@ namespace client.core
                     Log.Warning("Received unknown entity type");
                     break;
             }
+        }
+
+        private void OnInput(object sender, InputEventArgs args)
+        {
+            var msg = new InputMessage(args);
+            var writer = new NetDataWriter();
+            writer.Put(msg);
+            _server?.Send(writer, DeliveryMethod.ReliableOrdered);
         }
     }
 }
