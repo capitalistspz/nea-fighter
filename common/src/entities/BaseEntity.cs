@@ -10,6 +10,11 @@ namespace common.entities
     // Template for all entities
     public abstract class BaseEntity : ICollisionActor
     {
+        private long _ticksSinceLerpStart;
+        private long _maxLerpTicks;
+        public Point2 serverSidePosition;
+        private Point2 _oldPosition;
+
         public readonly World CurrentWorld;
         // For unique identification of entities
         public Guid Id { get; set; }
@@ -20,15 +25,35 @@ namespace common.entities
             get => Bounds.Position;
             set => Bounds.Position = value;
         }
-
+        
         public Vector2 Velocity { get; set; }
         public BaseEntity(World world, Guid id, Vector2 position)
         {
             Id = id;
             CurrentWorld = world;
+            _ticksSinceLerpStart = -1;
+            _maxLerpTicks = 100;
+        }
+        public void AssignServerMotion(Point2 position, Vector2 velocity)
+        {
+            _ticksSinceLerpStart = 0;
+            serverSidePosition = position;
+            _oldPosition = Position;
+            Velocity = (velocity + Velocity) / 2;
+
         }
         public abstract void OnCollision(CollisionEventArgs collisionInfo);
-        public abstract void Update(GameTime gameTime);
+
+        public virtual void Update(GameTime gameTime)
+        {
+            if (_ticksSinceLerpStart >= 0 && _ticksSinceLerpStart < _maxLerpTicks)
+            {
+                MathHelper.Lerp(_oldPosition.X, serverSidePosition.X, (float)_ticksSinceLerpStart / _maxLerpTicks);
+                MathHelper.Lerp(_oldPosition.Y, serverSidePosition.Y, (float)_ticksSinceLerpStart / _maxLerpTicks);
+
+                _ticksSinceLerpStart += gameTime.ElapsedGameTime.Ticks;
+            }
+        }
         public virtual void Draw(SpriteBatch spriteBatch){}
     }
 

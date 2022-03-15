@@ -50,6 +50,7 @@ namespace common.entities
             
             OnGround -= 1;
             _timeSinceLastAttack += deltaTime;
+            base.Update(gameTime);
         }
 
         public void ApplyInput(InputEventArgs args)
@@ -68,6 +69,7 @@ namespace common.entities
             }
 
             Velocity += args.MovementDirection * 2;
+            GameEvents.EnqueueInputEvent(args);
         }
 
         private void Shoot(Vector2 argsAimDirection)
