@@ -32,5 +32,7 @@ namespace common.networking.C2S
             _args.AimDirection.Y = reader.GetFloat();
             _args.Actions.SetByte(reader.GetByte());
         }
+
+        public InputEventArgs InputArgs => _args;
     }
 }

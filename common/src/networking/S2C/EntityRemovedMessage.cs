@@ -21,9 +21,12 @@ namespace common.networking.S2C
         public void Deserialize(NetDataReader reader)
         {
             _ = reader.GetByte();
+            
             var bytes = new byte[16];
             reader.GetBytes(bytes, 16);
             _id = new Guid(bytes);
         }
+
+        public Guid Id => _id;
     }
 }
