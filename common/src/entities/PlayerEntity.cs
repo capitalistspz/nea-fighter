@@ -14,6 +14,7 @@ namespace common.entities
         // Jump only when on the ground and if not jump
         public int OnGround { get; set; }
         public float Gravity { get; set; }
+        public ushort LocalPlayerID { get; protected set; }
 
         // To prevent attack spam
         private float _attackCooldown;
