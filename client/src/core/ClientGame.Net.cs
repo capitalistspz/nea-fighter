@@ -47,6 +47,7 @@ namespace client.core
                     NetCreateEntity(reader.Get<EntityCreatedMessage>());
                     break;
                 case S2CMessageType.EntityMotion:
+                    NetMoveEntity(reader.Get<EntityMotionMessage>());
                     break;
                 case S2CMessageType.EntityRemoved:
                     NetRemoveEntity(reader.Get<EntityRemovedMessage>());
@@ -57,6 +58,12 @@ namespace client.core
                     Log.Warning("Received unknown message type: {Type}", type);
                     break;
             }
+        }
+
+        private void NetMoveEntity(EntityMotionMessage msg)
+        {
+            var entity = _world.GetEntity(msg.Id);
+            entity.AssignServerMotion(msg.Position, msg.Velocity);
         }
 
         private void NetRemoveEntity(EntityRemovedMessage msg)
