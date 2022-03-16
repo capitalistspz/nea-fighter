@@ -7,9 +7,11 @@ namespace server.entities
 {
     public class ServerPlayerEntity : PlayerEntity
     {
-        public ServerPlayerEntity(World world, Guid id, Vector2 position, ushort localPlayerId) : base(world, id, position)
+        public (int, ushort) Identity { get; init; }
+        public ServerPlayerEntity(World world, Guid id, Vector2 position, ushort localPlayerId, int netId) : base(world, id, position)
         {
             LocalPlayerID = localPlayerId;
+            Identity = (netId, localPlayerId);
         }
     }
 }

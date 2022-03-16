@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using common.entities;
 using common.utils;
 using MonoGame.Extended.Collections;
@@ -8,35 +10,32 @@ namespace server
 {
     public class PlayerManager
     {
-        private Dictionary<long, ServerPlayerEntity> _players = new ( );
+        private KeyedCollection<(int,ushort),ServerPlayerEntity> _players;
 
-        public void AddPlayer(ServerPlayerEntity player, int netId)
+        public PlayerManager()
         {
-            var id = player.LocalPlayerID + (long) (netId << (Utils.SizeOf(player.LocalPlayerID) * 8));
-            _players[id] = player;
+            _players = new KeyedCollection<(int, ushort), ServerPlayerEntity>(p => p.Identity);
+        }
+        public void AddPlayer(ServerPlayerEntity player)
+        {
+            _players.Add(player);
         }
 
-        public void RemovePlayer(int netId, ushort localId)
+        public void RemovePlayer(ServerPlayerEntity player)
         {
-            var id = (long) netId << (Utils.SizeOf(localId) * 8) + localId;
-            _players.Remove(id);
+            //var id = (long) netId << (Utils.SizeOf(localId) * 8) + localId;
+            _players.Remove(player);
         }
 
         public ServerPlayerEntity GetPlayer(int netId, ushort localId)
         {
-            var id = (long)netId <<  (Utils.SizeOf(localId) * 8) + localId;
-            return _players[id];
+            //var id = (long)netId <<  (Utils.SizeOf(localId) * 8) + localId;
+            return _players[(netId, localId)];
         }
-    }
 
-    internal class Identifier
-    {
-        private ushort localId;
-        private int netId;
-
-        void t()
+        public IEnumerable<ServerPlayerEntity> GetPlayersByNetId(int netId)
         {
-            var t = (netId << (Utils.SizeOf(localId) * 8)) + localId;
+            return _players.Where(player => player.Identity.Item1 == netId);
         }
     }
 }
