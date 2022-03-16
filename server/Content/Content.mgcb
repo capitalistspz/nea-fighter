@@ -9,5 +9,14 @@
 
 #-------------------------------- References --------------------------------#
 
-
+/reference:MonoGame.Framework.Content.Pipeline.dll
+/reference:MonoGame.Framework.dll
+/reference:MonoGame.Extended.Tiled.dll
+/reference:MonoGame.Extended.Graphics.dll
+/reference:MonoGame.Extended.dll
+/reference:MonoGame.Extended.Content.Pipeline.dll
 #---------------------------------- Content ---------------------------------#
+#begin maps/default.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:maps/default.tmx
