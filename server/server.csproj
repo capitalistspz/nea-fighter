@@ -8,17 +8,10 @@
     </PropertyGroup>
     <PropertyGroup>
         <ApplicationManifest>app.manifest</ApplicationManifest>
-        <ApplicationIcon>Icon.ico</ApplicationIcon>
     </PropertyGroup>
-    <ItemGroup>
-        <None Remove="Icon.ico" />
-        <None Remove="Icon.bmp" />
-        <None Remove="Content\textures\**" />
-    </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.ico" />
         <EmbeddedResource Include="Icon.bmp" />
-        <EmbeddedResource Remove="Content\textures\**" />
     </ItemGroup>
     <ItemGroup>
         <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
