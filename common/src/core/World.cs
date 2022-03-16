@@ -16,7 +16,8 @@ namespace common.core
         // For collision handling
         private CollisionComponent _collisionComponent;
         private TiledMap _tiledMap;
-        
+        private List<Vector2> _spawnPositions;
+        private int _currentSpawn;
         public World(TiledMap map)
         {
             var bounds = new RectangleF(0, 0, map.Width * map.TileWidth, map.Height * map.TileHeight);
@@ -29,16 +30,26 @@ namespace common.core
             foreach (var basicCollisionObject in collisionObjects)
             {
                 _collisionComponent.Insert(basicCollisionObject);
-                Log.Debug("Added collision object {Bounds} ", basicCollisionObject.Bounds);
+                Log.Debug("Added map collision object {Bounds} ", basicCollisionObject.Bounds);
             }
+
+            _spawnPositions = TiledHelper.GetSpawnPositionsFromMap(_tiledMap, "Player Spawn Layer");
+
         }
         public void AddEntity(BaseEntity entity)
         {
             _collisionComponent.Insert(entity);
             _entityManager.AddEntity(entity);
-            
         }
 
+        public Vector2 GetNewSpawn()
+        {
+            if (_spawnPositions.Count <= 0) 
+                return Vector2.Zero;
+            var p = _currentSpawn++;
+            _currentSpawn %= _spawnPositions.Count;
+            return _spawnPositions[p];
+        }
         public IEnumerable<BaseEntity> FilterEntities(Predicate<BaseEntity> conditions)
         {
             return _entityManager.FilterEntities(conditions);
@@ -51,11 +62,15 @@ namespace common.core
             
         }
 
-        public BaseEntity GetEntity(Guid id)
+        public BaseEntity? GetEntity(Guid id)
         {
             return _entityManager.GetEntity(id);
         }
 
+        public IEnumerable<BaseEntity> GetAllEntities()
+        {
+            return _entityManager.GetAllEntities();
+        }
         public void RemoveCollisionObject(ICollisionActor actor)
         {
             _collisionComponent.Remove(actor);
