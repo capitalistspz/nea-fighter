@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Net;
 using common.entities;
@@ -15,6 +16,7 @@ namespace client.core
         private NetManager _client;
         private NetPeer _server;
         private EventBasedNetListener _listener;
+        private bool _pollNetwork;
         public ConcurrentQueue<INetSerializable> MessageQueue;
         
         public bool NetConnected { get; private set; }
@@ -23,6 +25,7 @@ namespace client.core
             _listener = new EventBasedNetListener();
             _client = new NetManager(_listener);
             _listener.NetworkReceiveEvent += OnReceiveData;
+            _pollNetwork = false;
             NetConnected = false;
             MessageQueue = new ConcurrentQueue<INetSerializable>();
 
@@ -35,10 +38,12 @@ namespace client.core
             _client.Start();
             _server = _client.Connect(endpoint, serverPassword);
             NetConnected = true;
+            Log.Debug("Networking initialised");
         }
         // Disconnect from a server
         public void Disconnect()
         {
+            _server.Disconnect();
             _client.Stop();
             NetConnected = false;
 
@@ -59,15 +64,49 @@ namespace client.core
                     break;
                 case S2CMessageType.TextMessage:
                     break;
+                case S2CMessageType.AssignId:
+                    NetAssignId(reader.Get<AssignIdMessage>());
+                    break;
                 default:
                     Log.Warning("Received unknown message type: {Type}", type);
                     break;
             }
         }
 
+        private void NetAssignId(AssignIdMessage msg)
+        {
+            Log.Debug("Assigning Id {Id} to local user {LocalId}", msg.Id, msg.LocalPlayerId);
+            var player = _localPlayers.Find(e => e.LocalPlayerID == msg.LocalPlayerId);
+            if (player != null)
+            {
+                // Effectively refreshes the player in the dictionary
+                player.Id = msg.Id;
+                _world.RemoveEntity(player);
+                _world.AddEntity(player);
+            }
+            else
+            {
+                Log.Warning("Unable to assign Id to local user");
+                ListPlayerIds();
+            }
+            
+        }
+
+        private void ListPlayerIds()
+        {
+            foreach (var playerEntity in _localPlayers)
+            {
+                Log.Debug("Identities {LocalId} : {Guid}",playerEntity.LocalPlayerID, playerEntity.Id);
+            }
+        }
         private void NetMoveEntity(EntityMotionMessage msg)
         {
             var entity = _world.GetEntity(msg.Id);
+            if (entity == null)
+            {
+                Log.Warning("Attempted to move entity, but entity not found");
+                return;
+            }
             entity.AssignServerMotion(msg.Position, msg.Velocity);
         }
 
@@ -104,7 +143,7 @@ namespace client.core
         private void SendLocalPlayerUpdate(ushort localPlayerId, bool removed)
         {
             var writer = new NetDataWriter();
-            
+            writer.Put(new LocalPlayerUpdateMessage(localPlayerId, removed));
             _server?.Send(writer, DeliveryMethod.ReliableOrdered);
         }
     }
