@@ -51,14 +51,14 @@ namespace common.core
             _newEntities.Enqueue(entity);
             Log.Debug("Entity of type {EntityType} added at position {EntityPosition}", entity.GetType(), entity.Position);
         }
-        public BaseEntity GetEntity(Guid id)
+        public BaseEntity? GetEntity(Guid id)
         {
-            return _entities[id];
+            return _entities.TryGetValue(id, out var entity) ? entity : null;
         }
         
         public PlayerEntity? GetPlayer(Guid id)
         {
-            var entity = _entities[id];
+            var entity = GetEntity(id);
             if (entity is PlayerEntity player)
                 return player;
             return null;
