@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using client.entities;
+using client.graphics;
 using client.input;
 using common.core;
 using common.entities;
-using common.helper;
-using LiteNetLib;
+using common.events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Tiled;
-using MonoGame.Extended.Tiled.Renderers;
 
 namespace client.core
 {
@@ -19,6 +18,8 @@ namespace client.core
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        
+        private SplitscreenManager _splitscreenManager;
         
         // Where entities and collisions are handled 
         private ClientWorld _world;
@@ -30,18 +31,14 @@ namespace client.core
         
         private List<ClientPlayerEntity> _localPlayers;
         private ushort _localPlayerId;
-
         public ClientGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-
+            
         }
         
-        /// <summary>
-        /// Load non graphical resources
-        /// </summary>
         protected override void Initialize()
         {
             _localPlayerId = 0;
@@ -50,6 +47,14 @@ namespace client.core
             _localPlayers = new List<ClientPlayerEntity>();
             var tiledMap = Content.Load<TiledMap>("maps/default");
             _world = new ClientWorld(tiledMap, GraphicsDevice);
+            InitNetwork();
+            
+            {
+                var width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                var height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                _splitscreenManager = new SplitscreenManager(new Rectangle(0,0, width, height));
+            }
+            
             base.Initialize();
         }
         
@@ -71,7 +76,13 @@ namespace client.core
         
         protected override void Update(GameTime gameTime)
         {
+            if (_pollNetwork)
+                _client.PollEvents();
+            
+            _pollNetwork = !_pollNetwork;
+            
             PollInputs(gameTime);
+            
             _world.Update(gameTime);
             base.Update(gameTime);
         }
@@ -80,11 +91,20 @@ namespace client.core
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            _spriteBatch.Begin();
-            // Draw from here
-            _world.Draw(gameTime, _spriteBatch, mapTransform: Matrix.Identity);
-            // To here 
-            _spriteBatch.End();
+            for (var i = 0; i < _localPlayers.Count; i++)
+            {
+                GraphicsDevice.Viewport = _splitscreenManager.GetView(i);
+                
+                var selectedPlayer = _localPlayers[i];
+
+                selectedPlayer.Camera.LookAt(selectedPlayer.Position);
+                
+                _spriteBatch.Begin(transformMatrix:selectedPlayer.Camera.GetViewMatrix());
+                _world.Draw(gameTime, _spriteBatch, selectedPlayer.Camera.GetViewMatrix());
+                
+                _spriteBatch.End();
+            }
+            
             base.Draw(gameTime);
         }
         
@@ -95,11 +115,13 @@ namespace client.core
 
         public new void Exit()
         {
+            _server?.Disconnect();
+            _client.Stop();
             base.Exit();
         }
         
         // Checks for any user input
-        public void PollInputs(GameTime gameTime)
+        private void PollInputs(GameTime gameTime)
         {
             // Spawns keyboard player on key press
             if (_keyboardGameplayInput == null)
@@ -111,24 +133,44 @@ namespace client.core
             {
                 _keyboardGameplayInput.Update(gameTime);
             }
-            
+
+            if (_controllerGameInputs.Count == 0)
+            {
+                if (GamePad.GetState(0).IsButtonDown(Buttons.Start))
+                    AddControllerPlayer(0);
+            }
             foreach (var controller in _controllerGameInputs)
             {
                 controller.Update(gameTime);
             }
+            GameEvents.TriggerInputEvents();
         }
         
         public void AddKeyboardPlayer()
         {
-            var newPlayer = new ClientPlayerEntity(_world, Guid.NewGuid(), Vector2.One, _localPlayerId++);
+            var newPlayer = new ClientPlayerEntity(_world, Guid.NewGuid(), _world.GetNewSpawn(), _localPlayerId++)
+                {
+                    Camera = new OrthographicCamera(GraphicsDevice)
+                };
+
             _keyboardGameplayInput = new KeyboardGameplayInput(newPlayer);
-            _localPlayers.Add(newPlayer);
-            _world.AddEntity(newPlayer);
+            
+            AddNewPlayer(newPlayer);
         }
         public void AddControllerPlayer(int padId)
         {
-            var newPlayer = new ClientPlayerEntity(_world, Guid.NewGuid(), Vector2.One, _localPlayerId++);
+            var newPlayer = new ClientPlayerEntity(_world, Guid.NewGuid(), _world.GetNewSpawn(), _localPlayerId++)
+                {
+                    Camera = new OrthographicCamera(GraphicsDevice)
+                };
+            
             _controllerGameInputs.Add(new ControllerGameplayInput(newPlayer, padId));
+            AddNewPlayer(newPlayer);
+        }
+
+        private void AddNewPlayer(ClientPlayerEntity newPlayer)
+        {
+            _splitscreenManager.IncrementViewCount();
             _localPlayers.Add(newPlayer);
             _world.AddEntity(newPlayer);
             SendLocalPlayerUpdate(newPlayer.LocalPlayerID, false);
