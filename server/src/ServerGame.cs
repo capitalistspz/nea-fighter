@@ -13,7 +13,7 @@ using server.entities;
 
 namespace server
 {
-    public class ServerGame : Game
+    public class ServerGame : Game , IGame
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -157,8 +157,14 @@ namespace server
 
         protected new void Exit()
         {
+            _server.DisconnectAll();
             _server.Stop();
             base.Exit();
+        }
+
+        public World GetWorld()
+        {
+            return _world;
         }
     }
 }

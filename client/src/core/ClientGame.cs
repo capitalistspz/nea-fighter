@@ -14,7 +14,7 @@ using MonoGame.Extended.Tiled;
 
 namespace client.core
 {
-    public partial class ClientGame : Game
+    public partial class ClientGame : Game, IGame
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
