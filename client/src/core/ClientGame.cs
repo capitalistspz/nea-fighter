@@ -34,9 +34,10 @@ namespace client.core
         public ClientGame()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.IsFullScreen = true;
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            
         }
         
         protected override void Initialize()
@@ -47,14 +48,9 @@ namespace client.core
             _localPlayers = new List<ClientPlayerEntity>();
             var tiledMap = Content.Load<TiledMap>("maps/default");
             _world = new ClientWorld(tiledMap, GraphicsDevice);
+            _splitscreenManager = new SplitscreenManager(
+                new Rectangle(0,0, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height));
             InitNetwork();
-            
-            {
-                var width = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                var height = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-                _splitscreenManager = new SplitscreenManager(new Rectangle(0,0, width, height));
-            }
-            
             base.Initialize();
         }
         
