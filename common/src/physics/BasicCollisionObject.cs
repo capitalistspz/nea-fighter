@@ -23,12 +23,13 @@ namespace common.physics
             if (collisionInfo.Other is BaseEntity entity)
             {
                 entity.Position += collisionInfo.PenetrationVector;
-
                 if (entity is PlayerEntity player)
                 {
                     if (Math.Abs(collisionInfo.PenetrationVector.X) > collisionInfo.PenetrationVector.Y)
                     {
-                        player.OnGround = 10;
+                        player.OnGround = 20;
+                        if (player.Velocity.Y > 0)
+                            player.Velocity.SetY(0);
                     }
                 }
             }
