@@ -24,6 +24,11 @@ namespace client.graphics
             Log.Debug("Created splitscreen manager with total bounds {Bounds}", fullBounds);
         }
 
+        public void UpdateFullBounds(Rectangle bounds)
+        {
+            _fullBounds = bounds;
+            UpdateViews();
+        }
         public void SetViewCount(int count)
         {
             _viewCount = count;
@@ -56,6 +61,8 @@ namespace client.graphics
             // Square grid layout of views
             var viewGridDim = (int)Math.Ceiling(Math.Sqrt(_viewCount));
             Log.Debug("View Count {ViewCount} View Grid Dim {ViewGridDim}", _viewCount, viewGridDim );
+            if (viewGridDim <= 0)
+                return;
             var newWidth = _fullBounds.Width / viewGridDim;
             var newHeight = _fullBounds.Height / viewGridDim;
             for (var i = 0;  i < _viewCount; ++i)
