@@ -14,6 +14,8 @@ namespace common.entities
         private long _maxLerpTicks;
         private Point2 _serverSidePosition;
         private Point2 _oldPosition;
+        private Vector2 _serverSideVelocity;
+        public abstract Vector2 MaxSpeed { get; protected set; }
 
         public readonly World CurrentWorld;
         // For unique identification of entities
@@ -34,13 +36,13 @@ namespace common.entities
             _ticksSinceLerpStart = -1;
             _maxLerpTicks = 100;
         }
+        // Used by the client to interpolate the delayed movement received from the server 
         public void AssignServerMotion(Point2 position, Vector2 velocity)
         {
             _ticksSinceLerpStart = 0;
+            _serverSideVelocity = velocity;
             _serverSidePosition = position;
             _oldPosition = Position;
-            Velocity = (velocity + Velocity) / 2;
-
         }
         public abstract void OnCollision(CollisionEventArgs collisionInfo);
 
@@ -48,9 +50,15 @@ namespace common.entities
         {
             if (_ticksSinceLerpStart >= 0 && _ticksSinceLerpStart < _maxLerpTicks)
             {
-                var intX = MathHelper.Lerp(_oldPosition.X, _serverSidePosition.X, (float)_ticksSinceLerpStart / _maxLerpTicks);
-                var intY =MathHelper.Lerp(_oldPosition.Y, _serverSidePosition.Y, (float)_ticksSinceLerpStart / _maxLerpTicks);
+                var interpolationDelta = (float) _ticksSinceLerpStart / _maxLerpTicks;
+                var intX = MathHelper.Lerp(_oldPosition.X, _serverSidePosition.X, interpolationDelta);
+                var intY = MathHelper.Lerp(_oldPosition.Y, _serverSidePosition.Y, interpolationDelta);
                 Position = new Point2(intX, intY);
+                
+                var intVx = MathHelper.Lerp(Velocity.X, _serverSideVelocity.X, interpolationDelta);
+                var intVy = MathHelper.Lerp(Velocity.Y, _serverSideVelocity.Y, interpolationDelta);
+                Velocity = new Vector2(intVx, intVy);
+                
                 _ticksSinceLerpStart += gameTime.ElapsedGameTime.Ticks;
             }
         }
