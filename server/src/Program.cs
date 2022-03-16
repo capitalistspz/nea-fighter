@@ -9,7 +9,7 @@ namespace server
         static void Main()
         {
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().WriteTo
-                .File("logs/client.log", rollingInterval: RollingInterval.Hour).CreateLogger();
+                .File("logs/server.log", rollingInterval: RollingInterval.Hour).CreateLogger();
             using (var game = new ServerGame())
                 game.Run();
         }
