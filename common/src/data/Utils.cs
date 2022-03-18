@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace common.utils
+namespace common.data
 {
     public static class Utils
     {

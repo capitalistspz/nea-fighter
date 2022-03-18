@@ -1,6 +1,6 @@
 using System;
+using common.data;
 using common.physics;
-using common.utils;
 using Microsoft.Xna.Framework;
 
 namespace common.events

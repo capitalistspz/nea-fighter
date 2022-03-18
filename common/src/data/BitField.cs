@@ -1,6 +1,6 @@
 using System;
 
-namespace common.utils
+namespace common.data
 {
     /// <summary>
     /// A type to representing 8 bools
