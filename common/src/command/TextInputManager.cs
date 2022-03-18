@@ -42,10 +42,13 @@ namespace common.command
             while (_enabled)
             {
                 var input = Console.ReadLine();
-                if (input == null || !input.StartsWith("/")) 
+                if (input == null ) 
                     continue;
-                input = input.Remove(0,1);
-                var runner = new CommandRunner(input.Split(" ", StringSplitOptions.TrimEntries), new CommandContext(_game));
+                input = input.TrimStart();
+                if (!input.StartsWith('/'))
+                    continue;
+                var commandString = input[1..];
+                var runner = new CommandRunner(commandString.Split(" ", StringSplitOptions.TrimEntries), new CommandContext(_game));
                 _commandRunners.Enqueue(runner);
 
             }
