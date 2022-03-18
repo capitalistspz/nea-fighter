@@ -16,14 +16,14 @@ namespace common.command
         {
             _commands.Next(command);
         }
-
+        
         public static void AddCommand(CommandNode command, string helpMessage)
         {
             _helpMessages.Add(command.GetName(), helpMessage);
             _commands.Next(command);
         }
 
-        public static CommandNode GetChild(string name)
+        public static CommandNode? GetChild(string name)
         {
             return _commands.GetChild(name);
         }
@@ -31,6 +31,11 @@ namespace common.command
         public static CommandNode GetRoot()
         {
             return _commands;
+        }
+
+        public static string GetHelpMessage(string command)
+        {
+            return _helpMessages[command];
         }
     }
 }
