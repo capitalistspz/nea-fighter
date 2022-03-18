@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using common.command;
 using common.core;
 using common.networking.C2S;
 using common.networking.S2C;
@@ -34,6 +35,8 @@ namespace server
             _graphics.PreferredBackBufferWidth = 10;
             _graphics.ApplyChanges();
             InitNetwork();
+            var tiledMap = Content.Load<TiledMap>("maps/default");
+            _world = new World(tiledMap);
             base.Initialize();
         }
 
@@ -47,15 +50,13 @@ namespace server
             _listener.ConnectionRequestEvent += OnConnectRequest;
             _listener.PeerDisconnectedEvent += OnDisconnect;
             _playerManager = new PlayerManager();
-            var tiledMap = Content.Load<TiledMap>("maps/default");
-            _world = new World(tiledMap);
             Log.Information("Server initialised");
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-                
+            
             base.LoadContent();
         }
 
@@ -152,7 +153,6 @@ namespace server
                     break;
                 
             }
-            
         }
 
         protected new void Exit()
