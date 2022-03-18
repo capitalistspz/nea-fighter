@@ -23,5 +23,10 @@ namespace common.command
         {
             _args[argName] = value;
         }
+
+        public IGame GetGame()
+        {
+            return _game;
+        }
     }
 }
