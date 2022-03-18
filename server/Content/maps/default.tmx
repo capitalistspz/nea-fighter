@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="7">
- <objectgroup id="1" name="Collision Object Layer">
+<map version="1.8" tiledversion="1.8.2" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="26">
+ <objectgroup id="2" name="Collision Object Layer">
   <object id="1" x="160" y="384" width="832" height="224"/>
+  <object id="7" x="0" y="32" width="32" height="3168"/>
+  <object id="8" x="32" y="3168" width="3168" height="32"/>
+  <object id="10" x="3168" y="0" width="32" height="3168"/>
+  <object id="13" x="0" y="0" width="3168" height="32"/>
+  <object id="14" x="1280" y="576" width="640" height="128"/>
+  <object id="16" x="1472" y="544" width="256" height="32"/>
+  <object id="17" x="480" y="800" width="288" height="64"/>
  </objectgroup>
- <objectgroup id="2" name="Player Spawn Layer">
+ <objectgroup id="3" name="Player Spawn Layer">
   <object id="2" name="SpawnP0" x="224" y="318.667">
    <point/>
   </object>
