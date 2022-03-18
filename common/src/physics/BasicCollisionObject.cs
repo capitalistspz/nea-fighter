@@ -25,7 +25,7 @@ namespace common.physics
                 entity.Position += collisionInfo.PenetrationVector;
                 if (entity is PlayerEntity player)
                 {
-                    if (Math.Abs(collisionInfo.PenetrationVector.X) > collisionInfo.PenetrationVector.Y)
+                    if (collisionInfo.PenetrationVector.X > collisionInfo.PenetrationVector.Y)
                     {
                         player.OnGround = 20;
                         if (player.Velocity.Y > 0)
