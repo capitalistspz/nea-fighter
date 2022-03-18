@@ -68,5 +68,10 @@ namespace common.physics
         {
             return X.GetHashCode() ^ Y.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return $"{{X: {X}. Y:{Y}}}";
+        }
     }
 }
