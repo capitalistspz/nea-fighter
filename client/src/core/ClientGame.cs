@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using client.command;
 using client.entities;
 using client.graphics;
 using client.input;
+using common.command;
 using common.core;
 using common.entities;
 using common.events;
@@ -20,7 +22,7 @@ namespace client.core
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        
+        private TextInputManager _textInputManager;
         private SplitscreenManager _splitscreenManager;
         
         // Where entities and collisions are handled 
@@ -54,10 +56,21 @@ namespace client.core
             _controllerGameInputs = new KeyedCollection<int, ControllerGameplayInput>(c=> c.ControllerId);
             _localPlayers = new List<ClientPlayerEntity>();
             
+            _textInputManager = new TextInputManager(this);
+            _textInputManager.Start();
+            
             var tiledMap = Content.Load<TiledMap>("maps/default");
             _world = new ClientWorld(tiledMap, GraphicsDevice);
+            
+            SetCommands();
             InitNetwork();
             base.Initialize();
+        }
+
+        private void SetCommands()
+        {
+            HelpCommand.Register();
+            ConnectCommand.Register();
         }
         
         /// <summary>
@@ -84,8 +97,8 @@ namespace client.core
             _pollNetwork = !_pollNetwork;
             
             PollInputs(gameTime);
-            
             _world.Update(gameTime);
+            _textInputManager.Update();
             base.Update(gameTime);
         }
         

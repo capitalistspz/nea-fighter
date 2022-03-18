@@ -18,6 +18,7 @@ namespace server
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private TextInputManager _textInputManager;
         private EventBasedNetListener _listener;
         private NetManager _server;
         private PlayerManager _playerManager;
@@ -34,9 +35,12 @@ namespace server
             _graphics.PreferredBackBufferHeight = 10;
             _graphics.PreferredBackBufferWidth = 10;
             _graphics.ApplyChanges();
+            
+            _textInputManager = new TextInputManager(this);
+            _textInputManager.Start();
+            
             InitNetwork();
-            var tiledMap = Content.Load<TiledMap>("maps/default");
-            _world = new World(tiledMap);
+            SetCommands();
             base.Initialize();
         }
 
@@ -52,7 +56,10 @@ namespace server
             _playerManager = new PlayerManager();
             Log.Information("Server initialised");
         }
-
+        private void SetCommands()
+        {
+            HelpCommand.Register();
+        }
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
