@@ -2,7 +2,7 @@ using System;
 
 namespace common.command
 {
-    public class HelpCommand
+    public static class HelpCommand
     {
         public static void Register()
         {
