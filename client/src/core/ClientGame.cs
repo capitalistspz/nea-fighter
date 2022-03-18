@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using client.entities;
 using client.graphics;
 using client.input;
@@ -10,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGame.Extended.Collections;
 using MonoGame.Extended.Tiled;
 
 namespace client.core
@@ -26,7 +28,7 @@ namespace client.core
         
         // Input device managers
         private KeyboardGameplayInput _keyboardGameplayInput;
-        private List<ControllerGameplayInput> _controllerGameInputs;
+        private KeyedCollection<int, ControllerGameplayInput> _controllerGameInputs;
         private ushort _maxControllers;
         
         private List<ClientPlayerEntity> _localPlayers;
@@ -35,21 +37,25 @@ namespace client.core
         {
             _graphics = new GraphicsDeviceManager(this);
             _graphics.IsFullScreen = true;
-
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
-        
+               
         protected override void Initialize()
         {
+            var res = Utils.GetMaxSupportedResolution(GraphicsAdapter.DefaultAdapter);
+            _graphics.PreferredBackBufferWidth = res.X;
+            _graphics.PreferredBackBufferHeight = res.Y;
+            _graphics.ApplyChanges();
+            _splitscreenManager = new SplitscreenManager(new Rectangle(0,0, res.X, res.Y));
+            
             _localPlayerId = 0;
             _maxControllers = 4;
-            _controllerGameInputs = new List<ControllerGameplayInput>();
+            _controllerGameInputs = new KeyedCollection<int, ControllerGameplayInput>(c=> c.ControllerId);
             _localPlayers = new List<ClientPlayerEntity>();
+            
             var tiledMap = Content.Load<TiledMap>("maps/default");
             _world = new ClientWorld(tiledMap, GraphicsDevice);
-            _splitscreenManager = new SplitscreenManager(
-                new Rectangle(0,0, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height));
             InitNetwork();
             base.Initialize();
         }
@@ -122,18 +128,23 @@ namespace client.core
             // Spawns keyboard player on key press
             if (_keyboardGameplayInput == null)
             {
-                if (Keyboard.GetState().GetPressedKeyCount() > 0)
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                     AddKeyboardPlayer();
             }
             else
             {
                 _keyboardGameplayInput.Update(gameTime);
             }
-
-            if (_controllerGameInputs.Count == 0)
+            // Get the list of controllers that are connected
+            var connectedGamepadIds = GetConnectedControllers();
+            
+            // Remove all controller ids already in use by the game
+            connectedGamepadIds.RemoveAll(i => _controllerGameInputs.ContainsKey(i));
+            
+            // Create new player with controller if the controller presses start 
+            foreach (var id in connectedGamepadIds.Where(id => GamePad.GetState(id).IsButtonDown(Buttons.Start)))
             {
-                if (GamePad.GetState(0).IsButtonDown(Buttons.Start))
-                    AddControllerPlayer(0);
+                AddControllerPlayer(id);
             }
             foreach (var controller in _controllerGameInputs)
             {
@@ -170,6 +181,19 @@ namespace client.core
             _localPlayers.Add(newPlayer);
             _world.AddEntity(newPlayer);
             SendLocalPlayerUpdate(newPlayer.LocalPlayerID, false);
+        }
+
+        private List<int> GetConnectedControllers()
+        {
+            var connectedControllerIds = new List<int>();
+            for (var i = 0; i < _maxControllers; ++i)
+            {
+                if (GamePad.GetState(i).IsConnected)
+                    connectedControllerIds.Add(i);
+                
+            }
+
+            return connectedControllerIds;
         }
     }
 }
