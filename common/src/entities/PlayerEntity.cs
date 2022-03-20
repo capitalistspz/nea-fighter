@@ -11,7 +11,7 @@ namespace common.entities
 {
     public class PlayerEntity : BaseEntity
     {
-        // Jump only when on the ground and if not jump
+        // Time left until player does not count as being on the ground
         public int OnGround { get; set; }
         public float Gravity { get; set; }
         public ushort LocalPlayerID { get; protected set; }
