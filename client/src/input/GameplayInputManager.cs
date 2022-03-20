@@ -6,14 +6,14 @@ using Microsoft.Xna.Framework;
 namespace client.input
 {
     // Handles inputs that occur during gameplay
-    public abstract class GameplayInput<TInputElement> : IGameInput<ClientPlayerEntity>
+    public abstract class GameplayInputManager<TInputElement> : IInputManager<ClientPlayerEntity>
     {
         private long _lastUpdateTime;
         private long _minTimeDelay;
         public abstract Vector2 AimDirection { get; }
         public ClientPlayerEntity Owner { get; set; }
         private Dictionary<InputAction, TInputElement> _inputMapping;
-        public GameplayInput(ClientPlayerEntity owner)
+        public GameplayInputManager(ClientPlayerEntity owner)
         {
             _inputMapping = new Dictionary<InputAction, TInputElement>();
             _lastUpdateTime = 0;

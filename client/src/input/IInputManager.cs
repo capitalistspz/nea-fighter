@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace client.input
 {
     // Base for all input managers
-    public interface IGameInput<T>
+    public interface IInputManager<T>
     {
         public Vector2 AimDirection { get; }
         // The thing controlled controlled by the input

@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace client.input
 {
-    public class ControllerGameplayInput : GameplayInput<Buttons>
+    public class ControllerGameplayInputManager : GameplayInputManager<Buttons>
     {
         // MonoGame accesses controllers by index
         public readonly int ControllerId;
@@ -17,7 +17,7 @@ namespace client.input
             return GamePad.GetState(ControllerId).IsButtonDown(button);
         }
         
-        public ControllerGameplayInput(ClientPlayerEntity owner, int controllerId) : base(owner)
+        public ControllerGameplayInputManager(ClientPlayerEntity owner, int controllerId) : base(owner)
         {
             AssignInputs(DefaultMapping);
             if (controllerId >= 0)

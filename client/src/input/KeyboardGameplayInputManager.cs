@@ -7,7 +7,7 @@ using MonoGame.Extended;
 
 namespace client.input
 {
-    public class KeyboardGameplayInput : GameplayInput<Keys>
+    public class KeyboardGameplayInputManager : GameplayInputManager<Keys>
     {
         public override bool IsPressed(Keys key)
         {
@@ -25,7 +25,7 @@ namespace client.input
             }
         }
 
-        public KeyboardGameplayInput(ClientPlayerEntity owner) : base(owner)
+        public KeyboardGameplayInputManager(ClientPlayerEntity owner) : base(owner)
         {
             AssignInputs(DefaultMapping);
         }

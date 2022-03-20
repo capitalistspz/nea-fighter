@@ -29,8 +29,8 @@ namespace client.core
         private ClientWorld _world;
         
         // Input device managers
-        private KeyboardGameplayInput _keyboardGameplayInput;
-        private KeyedCollection<int, ControllerGameplayInput> _controllerGameInputs;
+        private KeyboardGameplayInputManager _keyboardGameplayInputManager;
+        private KeyedCollection<int, ControllerGameplayInputManager> _controllerGameInputs;
         private ushort _maxControllers;
         
         private List<ClientPlayerEntity> _localPlayers;
@@ -53,7 +53,7 @@ namespace client.core
             
             _localPlayerId = 0;
             _maxControllers = 4;
-            _controllerGameInputs = new KeyedCollection<int, ControllerGameplayInput>(c=> c.ControllerId);
+            _controllerGameInputs = new KeyedCollection<int, ControllerGameplayInputManager>(c=> c.ControllerId);
             _localPlayers = new List<ClientPlayerEntity>();
             
             _textInputManager = new TextInputManager(this);
@@ -139,14 +139,14 @@ namespace client.core
         private void PollInputs(GameTime gameTime)
         {
             // Spawns keyboard player on key press
-            if (_keyboardGameplayInput == null)
+            if (_keyboardGameplayInputManager == null)
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                     AddKeyboardPlayer();
             }
             else
             {
-                _keyboardGameplayInput.Update(gameTime);
+                _keyboardGameplayInputManager.Update(gameTime);
             }
             // Get the list of controllers that are connected
             var connectedGamepadIds = GetConnectedControllers();
@@ -173,7 +173,7 @@ namespace client.core
                     Camera = new OrthographicCamera(GraphicsDevice)
                 };
 
-            _keyboardGameplayInput = new KeyboardGameplayInput(newPlayer);
+            _keyboardGameplayInputManager = new KeyboardGameplayInputManager(newPlayer);
             
             AddNewPlayer(newPlayer);
         }
@@ -184,7 +184,7 @@ namespace client.core
                     Camera = new OrthographicCamera(GraphicsDevice)
                 };
             
-            _controllerGameInputs.Add(new ControllerGameplayInput(newPlayer, padId));
+            _controllerGameInputs.Add(new ControllerGameplayInputManager(newPlayer, padId));
             AddNewPlayer(newPlayer);
         }
 
