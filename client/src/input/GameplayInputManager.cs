@@ -10,9 +10,12 @@ namespace client.input
     {
         private long _lastUpdateTime;
         private long _minTimeDelay;
-        public abstract Vector2 AimDirection { get; }
-        public ClientPlayerEntity Owner { get; set; }
+        
         private Dictionary<InputAction, TInputElement> _inputMapping;
+        
+        public ClientPlayerEntity Owner { get; set; }
+        public abstract Vector2 AimDirection { get; }
+        
         public GameplayInputManager(ClientPlayerEntity owner)
         {
             _inputMapping = new Dictionary<InputAction, TInputElement>();
